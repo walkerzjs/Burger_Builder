@@ -5,20 +5,22 @@ class OrderSummary extends Component {
   //   componentWillUpdate() {
   //     console.log("[order summary] WillUpdate");
   //   }
-  ingredientSummary = Object.keys(this.props.ingredients).map(key => {
-    return (
-      <li key={key}>
-        <span style={{ textTransform: "capitalize" }}>{key}</span>:{" "}
-        {this.props.ingredients[key]}
-      </li>
-    );
-  });
+
   render() {
+    let ingredientSummary = Object.keys(this.props.ingredients).map((key) => {
+      return (
+        <li key={key}>
+          <span style={{ textTransform: "capitalize" }}>{key}</span>:{" "}
+          {this.props.ingredients[key]}
+        </li>
+      );
+    });
+    console.log("ordersum: ", this.props.ingredients);
     return (
       <React.Fragment>
         <h3>Your Order</h3>
         <p>A delicious burger with the following ingredients: </p>
-        <ul>{this.ingredientSummary}</ul>
+        <ul>{ingredientSummary}</ul>
         <p>
           Total Price: <strong>{this.props.totalPrice.toFixed(2)}</strong>
         </p>

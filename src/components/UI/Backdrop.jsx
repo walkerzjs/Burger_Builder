@@ -12,7 +12,7 @@ const BackdropC = styled.div`
 `;
 
 const Backdrop = props => {
-  const textInput = useRef(null);
+  //   const textInput = useRef(null);
   //   const toggle = () => {
   //     console.log(textInput);
   //     if (textInput.current.style.display !== "none") {
@@ -20,9 +20,7 @@ const Backdrop = props => {
   //     }
   //   };
 
-  return props.show ? (
-    <BackdropC ref={textInput} onClick={props.clicked}></BackdropC>
-  ) : null;
+  return props.show ? <BackdropC onClick={props.clicked}></BackdropC> : null;
 };
 
 export default Backdrop;

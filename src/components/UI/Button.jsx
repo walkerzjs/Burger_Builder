@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const ButtonC = styled.button`
-  background-color: lightgray;
+  background-color: transparent;
   border: none;
   color: black;
   outline: none;

@@ -1,12 +1,13 @@
 import React from "react";
 import styled from "styled-components";
+import { Link, NavLink } from "react-router-dom";
 
 const NavigationItemC = styled.li`
   margin: 1rem 0;
   display: block;
   width: 100%;
 
-  a {
+  & > a {
     color: #8f5c2c;
     text-decoration: none;
     width: 100%;
@@ -26,7 +27,7 @@ const NavigationItemC = styled.li`
     width: auto;
     align-items: center;
 
-    a {
+    & > a {
       color: white;
       text-decoration: none;
       height: 100%;
@@ -37,7 +38,7 @@ const NavigationItemC = styled.li`
 
       &:hover,
       &:active,
-      &.active {
+      &.NavigationItemActive {
         background-color: #8f5c2c;
         border-bottom: 4px solid #40a4c8;
         color: white;
@@ -45,11 +46,12 @@ const NavigationItemC = styled.li`
     }
   }
 `;
+
 const NavigationItem = props => (
   <NavigationItemC>
-    <a href={props.link} className={props.active ? "active" : null}>
+    <NavLink to={props.link} exact activeClassName="NavigationItemActive">
       {props.children}
-    </a>
+    </NavLink>
   </NavigationItemC>
 );
 

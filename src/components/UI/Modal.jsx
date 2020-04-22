@@ -23,12 +23,15 @@ const ModelC = styled.div`
   } */
 `;
 
-class modal extends Component {
+class Modal extends Component {
   shouldComponentUpdate(nextProps) {
-    return nextProps.show !== this.props.show;
+    return (
+      nextProps.show !== this.props.show ||
+      nextProps.loading !== this.props.loading
+    );
   }
   render() {
-    console.log("update Modal");
+    console.log("rendering modal..");
     return (
       <React.Fragment>
         <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
@@ -38,4 +41,4 @@ class modal extends Component {
   }
 }
 
-export default modal;
+export default Modal;

@@ -66,7 +66,6 @@ const controls = [
 ];
 
 const buildControls = props => {
-  console.log(props.purchaseable);
   return (
     <BuildControlsC>
       <p>

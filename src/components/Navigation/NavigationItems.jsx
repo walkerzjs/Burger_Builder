@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import NavigationItem from "./NavigationItem";
-
+import { withRouter } from "react-router-dom";
 const NavigationItemsC = styled.ul`
   margin: 0;
   padding: 0;
@@ -15,13 +15,14 @@ const NavigationItemsC = styled.ul`
     flex-flow: row;
   }
 `;
-const NavigationItems = () => (
-  <NavigationItemsC>
-    <NavigationItem link="/" active>
-      Burger Builder
-    </NavigationItem>
-    <NavigationItem link="/">Checkout</NavigationItem>
-  </NavigationItemsC>
-);
+const NavigationItems = props => {
+  //   console.log("nav ", props, props.match.url);
+  return (
+    <NavigationItemsC>
+      <NavigationItem link="/">Burger Builder</NavigationItem>
+      <NavigationItem link="/orders">Orders</NavigationItem>
+    </NavigationItemsC>
+  );
+};
 
-export default NavigationItems;
+export default withRouter(NavigationItems);

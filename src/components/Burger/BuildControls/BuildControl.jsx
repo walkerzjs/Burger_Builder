@@ -58,7 +58,6 @@ const BuildControl = styled.div`
 `;
 
 const buildControl = props => {
-  console.log(props.addIngredient);
   // const disabledFlag = props.disabled===true?"disabled": null
   return (
     <BuildControl>

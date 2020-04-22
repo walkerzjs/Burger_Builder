@@ -109,7 +109,7 @@ const BreadTop = styled.div`
   width: 80%;
   background: linear-gradient(#bc581e, #e27b36);
   border-radius: 50% 50% 0 0;
-  box-shadow: inset -15px 0 #c15711;
+  box-shadow: inset -10px 0 #c15711;
   margin: 2% auto;
   position: relative;
 `;
@@ -120,7 +120,7 @@ class BurgerIngredient extends Component {
 
     switch (this.props.type) {
       case "bread-bottom":
-        ingredient = <BreadBottom>asdf</BreadBottom>;
+        ingredient = <BreadBottom />;
         break;
       case "bread-top":
         ingredient = (

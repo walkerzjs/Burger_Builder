@@ -28,6 +28,11 @@ const ToolBarC = styled.header`
       display: none;
     }
   }
+  /* @media (min-width: 500px) {
+    & .DrawerToggle {
+      display: none;
+    }
+  } */
 `;
 
 const Toolbar = props => {

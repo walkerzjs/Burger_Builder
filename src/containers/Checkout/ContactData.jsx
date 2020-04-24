@@ -4,6 +4,8 @@ import Button from "../../components/UI/Button";
 import axios from "../../axios-order";
 import Spinner from "../../components/UI/Spinner";
 import Input from "../../components/UI/Input";
+import { connect } from "react-redux";
+import { orderActions } from "../../store/actions/index";
 
 const ContactDataC = styled.div`
   margin: 2rem auto;
@@ -35,59 +37,59 @@ class ContactData extends React.Component {
 
         elementConfig: {
           type: "text",
-          placeholder: "Your Name"
+          placeholder: "Your Name",
           //   name: "name"
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
-        touched: false
+        touched: false,
       },
       email: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Email"
+          placeholder: "Email",
           //   name: "email"
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
-        touched: false
+        touched: false,
       },
       street: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Street name"
+          placeholder: "Street name",
           //   name: "street"
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
-        touched: false
+        touched: false,
       },
       postalCode: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Postal code"
+          placeholder: "Postal code",
           //   name: "postalCode"
         },
         value: "",
         validation: {
           required: true,
           minLength: 4,
-          maxLength: 5
+          maxLength: 5,
         },
         valid: false,
-        touched: false
+        touched: false,
       },
       deliveryMethod: {
         elementType: "select",
@@ -95,11 +97,11 @@ class ContactData extends React.Component {
           defaultValue: "cheapest",
           options: [
             { value: "fastest", displayValue: "Fastest" },
-            { value: "cheapest", displayValue: "Cheapest" }
-          ]
+            { value: "cheapest", displayValue: "Cheapest" },
+          ],
           //   name: "deliveryMethod"
         },
-        value: "cheapest"
+        value: "cheapest",
       },
       country: {
         elementType: "select",
@@ -107,17 +109,16 @@ class ContactData extends React.Component {
           defaultValue: "Australia",
           options: [
             { value: "Australia", displayValue: "Australia" },
-            { value: "US", displayValue: "United States" }
-          ]
+            { value: "US", displayValue: "United States" },
+          ],
           //   name: "country"
         },
-        value: "Australia"
-      }
+        value: "Australia",
+      },
     },
-    loading: false
   };
 
-  orderSubmit = e => {
+  orderSubmit = (e) => {
     e.preventDefault();
 
     //check whether the form is valid, check all fields, update form error config
@@ -144,7 +145,7 @@ class ContactData extends React.Component {
       return;
     }
     //if not invlid, then start sending data.
-    this.setState({ loading: true });
+    // this.setState({ loading: true });
 
     let formData = {};
     for (let key in this.state.orderForm) {
@@ -153,17 +154,18 @@ class ContactData extends React.Component {
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.price.toFixed(2),
-      formData
+      formData,
     };
-    axios
-      .post("/orders.json", order)
-      .then(response => {
-        this.setState({ loading: false });
-        this.props.history.push("/");
-      })
-      .catch(error => {
-        this.setState({ loading: false });
-      });
+    this.props.onSubmit(order);
+    // axios
+    //   .post("/orders.json", order)
+    //   .then((response) => {
+    //     this.setState({ loading: false });
+    //     this.props.history.push("/");
+    //   })
+    //   .catch((error) => {
+    //     this.setState({ loading: false });
+    //   });
   };
 
   checkValidity = (value, isRuleRequired) => {
@@ -179,15 +181,17 @@ class ContactData extends React.Component {
     if (isRuleRequired.minLength) {
       isValid = value.length >= isRuleRequired.minLength && isValid;
       if (!isValid) {
-        errorMessage = `The length of this field should be more than ${isRuleRequired.minLength -
-          1} and less than ${isRuleRequired.maxLength + 1}`;
+        errorMessage = `The length of this field should be more than ${
+          isRuleRequired.minLength - 1
+        } and less than ${isRuleRequired.maxLength + 1}`;
       }
     }
     if (isRuleRequired.maxLength) {
       isValid = value.length <= isRuleRequired.maxLength && isValid;
       if (!isValid) {
-        errorMessage = `The length of this field should be more than ${isRuleRequired.minLength -
-          1} and less than ${isRuleRequired.maxLength + 1}`;
+        errorMessage = `The length of this field should be more than ${
+          isRuleRequired.minLength - 1
+        } and less than ${isRuleRequired.maxLength + 1}`;
       }
     }
 
@@ -213,13 +217,14 @@ class ContactData extends React.Component {
 
   render() {
     // console.log(this.state.orderForm);
+
     let elements = [];
     for (let fieldName in this.state.orderForm) {
       elements.push(
         <Input
           label={fieldName.toUpperCase()}
           {...this.state.orderForm[fieldName]}
-          onChange={e => this.inputChange(e, fieldName)}
+          onChange={(e) => this.inputChange(e, fieldName)}
           key={fieldName}
           invalid={!this.state.orderForm[fieldName].valid}
           shouldValidate={this.state.orderForm[fieldName].validation}
@@ -231,7 +236,7 @@ class ContactData extends React.Component {
     return (
       <ContactDataC>
         <h4>Enter your Contact Data</h4>
-        {this.state.loading ? (
+        {this.props.loading ? (
           <Spinner />
         ) : (
           <form action="">
@@ -245,5 +250,18 @@ class ContactData extends React.Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    loading: state.OrderReducer.loading,
+    ingredients: state.BurgerReducer.ingredients,
+    price: state.BurgerReducer.price,
+  };
+};
 
-export default ContactData;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSubmit: (data) => dispatch(orderActions.purchaseBurger(data)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

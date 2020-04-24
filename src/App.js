@@ -14,10 +14,6 @@ const Container = styled.div`
 `;
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.getBasePrice();
-  }
   getBasePrice = () => {
     let basePrice = 0;
     axios
@@ -31,7 +27,10 @@ class App extends React.Component {
       });
     console.log("App: ", basePrice);
   };
-  componentDidMount() {}
+  componentDidMount() {
+    console.log("[App componentDidMount]");
+    this.getBasePrice();
+  }
   render() {
     return (
       <BrowserRouter>

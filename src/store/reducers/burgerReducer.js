@@ -1,22 +1,35 @@
 import * as actionTypes from "../actions/actionTypes";
+import { updateObject } from "../utility";
+const initialState = {
+  ingredients: {},
+  price: null,
+  basePrice: null,
+  error: false,
+};
 
-const initialState = { ingredients: {}, price: 0, basePrice: 0 };
+const updateBurger = (state, action) => {
+  console.log("burger reducer: ", action);
+  return updateObject(state, {
+    ingredients: { ...action.ingredients },
+    price: action.price,
+    error: false,
+  });
+};
 
+const updateBasePrice = (state, action) => {
+  return updateObject(state, { basePrice: action.basePrice });
+};
 const burgerReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.UPDATE_BURGER:
-      console.log("burger reducer: ", action);
-      return {
-        ...state,
-        ingredients: { ...action.ingredients },
-        price: action.price,
-      };
+      return updateBurger(state, action);
+
     case actionTypes.UPDATE_BASE_PRICE:
-      console.log("base price reducer: ", action);
-      return {
-        ...state,
-        basePrice: action.basePrice,
-      };
+      return updateBasePrice(state, action);
+
+    case actionTypes.FETCH_INGREDIENTS_FAILED:
+      return updateObject(state, { error: true });
+
     default:
       return state;
   }

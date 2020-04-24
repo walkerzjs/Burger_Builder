@@ -11,11 +11,6 @@ export const updateBurger = (ingredients, price) => {
 export const fetchIngredents = (INGREDIENT_PRICES, basePrice) => {
   return async (dispatch) => {
     try {
-      //   const response_basePrice = await axios.get("basePrice.json");
-      //   dispatch({
-      //     type: actionTypes.UPDATE_BASE_PRICE,
-      //     basePrice: response_basePrice.data,
-      //   });
       const response = await axios.get("ingredients.json");
       let updatedPrice =
         Object.keys(response.data)
@@ -25,7 +20,13 @@ export const fetchIngredents = (INGREDIENT_PRICES, basePrice) => {
           .reduce((sum, el) => sum + el, 0) + basePrice;
       dispatch(updateBurger(response.data, updatedPrice));
     } catch (error) {
-      console.log(error);
+      dispatch(fetchIngredentsFailed());
     }
+  };
+};
+
+export const fetchIngredentsFailed = () => {
+  return {
+    type: actionTypes.FETCH_INGREDIENTS_FAILED,
   };
 };

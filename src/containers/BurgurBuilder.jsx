@@ -7,7 +7,8 @@ import axios from "../axios-order";
 import Spinner from "../components/UI/Spinner";
 import WithErrorHandler from "../hoc/WithErrorHandler";
 import { connect } from "react-redux";
-import { burgerActions } from "../store/actions/index";
+import { burgerActions, orderActions } from "../store/actions/index";
+import TestHOC from "../hoc/TestHOC";
 // import * as actions from '../store/actions/index'
 
 const INGREDIENT_PRICES = {
@@ -21,15 +22,32 @@ class BurgurBuilder extends Component {
   state = {
     purchaseable: false,
     purchasing: false,
-    loading: false,
-    error: false,
+    // loading: false,
+    // error: false,
   };
 
   componentDidMount() {
     // console.log("base price 1: ", this.props.basePrice);
-    this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
+    // this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
     // console.log("result: ", result);
     // console.log("base price 2: ", this.props.basePrice);
+
+    // if (
+    //   this.props.price > this.props.basePrice &&
+    //   // prevProps.price !== this.props.price &&
+    //   this.state.purchaseable === false
+    // ) {
+    //   this.setState({ purchaseable: true });
+    // }
+    if (Object.keys(this.props.ingredients).length === 0) {
+      this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
+    } else {
+      const resetedIngredients = { ...this.props.ingredients };
+      for (let key in resetedIngredients) {
+        resetedIngredients[key] = 0;
+      }
+      this.props.onUpdatingBurger(resetedIngredients, this.props.basePrice);
+    }
   }
   componentDidUpdate(prevProps) {
     if (prevProps.basePrice !== this.props.basePrice) {
@@ -38,7 +56,8 @@ class BurgurBuilder extends Component {
     }
     if (
       this.props.price > this.props.basePrice &&
-      prevProps.price !== this.props.price
+      prevProps.price !== this.props.price &&
+      this.state.purchaseable === false
     ) {
       this.setState({ purchaseable: true });
     }
@@ -66,10 +85,6 @@ class BurgurBuilder extends Component {
 
     const oldPrice = this.props.price;
     const updatedPrice = INGREDIENT_PRICES[type] + oldPrice;
-    // this.setState({
-    //   ingredients: updatedIngredients,
-    //   totalPrice: updatedPrice,
-    // });
     this.props.onUpdatingBurger(updatedIngredients, updatedPrice);
 
     this.updatePurchaseState(updatedIngredients);
@@ -90,11 +105,6 @@ class BurgurBuilder extends Component {
     let updatedPrice = oldPrice;
 
     updatedPrice = oldPrice - INGREDIENT_PRICES[type];
-
-    // this.setState({
-    //   ingredients: updatedIngredients,
-    //   totalPrice: updatedPrice,
-    // });
     this.props.onUpdatingBurger(updatedIngredients, updatedPrice);
 
     this.updatePurchaseState(updatedIngredients);
@@ -119,10 +129,18 @@ class BurgurBuilder extends Component {
     // this.props.history.push(
     //   `/checkout?${query}&price=${this.props.price.toFixed(2)}`
     // );
+    this.props.onInitPurchase();
     this.props.history.push(`/checkout`);
   };
 
   render() {
+    console.log(
+      "[BurgerBuilder rendering]",
+      this.props.ingredients,
+      this.props.price,
+      this.props.error
+    );
+
     const disabledInfo = {
       ...this.props.ingredients,
     };
@@ -146,16 +164,17 @@ class BurgurBuilder extends Component {
         totalPrice={this.props.price}
       />
     );
-    if (this.state.loading || !this.props.ingredients) {
+    if (Object.keys(this.props.ingredients).length === 0) {
       orderSummary = <Spinner />;
     }
-
-    let burger = this.state.error ? (
+    console.log("error: ", this.props.error);
+    let burger = this.props.error ? (
       <p>Ingredients can't be loaded</p>
     ) : (
       <Spinner />
     );
-    if (this.props.ingredients) {
+    if (Object.keys(this.props.ingredients).length > 0 && this.props.price) {
+      console.log("baseprice is: ", this.props.basePrice);
       burger = (
         <React.Fragment>
           <Burger ingredients={this.props.ingredients} />
@@ -170,15 +189,25 @@ class BurgurBuilder extends Component {
         </React.Fragment>
       );
     }
+    class TestComponent extends React.Component {
+      render() {
+        return (
+          <h1>
+            This is a custom higher order component named as {this.props.name}!
+          </h1>
+        );
+      }
+    }
     return (
       <React.Fragment>
         <Modal
           show={this.state.purchasing}
           modalClosed={this.unPurchaseHandler}
-          loading={this.state.loading}
+          // loading={this.state.loading}
         >
           {orderSummary}
         </Modal>
+        <TestHOC child={TestComponent} />
         {burger}
       </React.Fragment>
     );
@@ -190,6 +219,7 @@ const mapStateToProps = (state) => {
     ingredients: state.BurgerReducer.ingredients,
     price: state.BurgerReducer.price,
     basePrice: state.BurgerReducer.basePrice,
+    error: state.BurgerReducer.error,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -199,6 +229,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchIngredients: (ingredientPrices, basePrice) => {
       dispatch(burgerActions.fetchIngredents(ingredientPrices, basePrice));
     },
+    onInitPurchase: () => dispatch(orderActions.purchaseInit()),
   };
 };
 

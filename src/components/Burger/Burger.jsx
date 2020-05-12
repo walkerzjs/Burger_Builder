@@ -22,9 +22,9 @@ const BurgerC = styled.div`
   }
 `;
 
-const Burger = props => {
+const Burger = (props) => {
   const transformedIngredients = Object.entries(props.ingredients)
-    .map(entry => {
+    .map((entry) => {
       let result = [];
       if (entry[1] > 0) {
         for (let index = 0; index < entry[1]; index++) {

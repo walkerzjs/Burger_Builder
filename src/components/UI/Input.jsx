@@ -37,7 +37,7 @@ const InputC = styled.div`
   }
 `;
 
-const Input = props => {
+const Input = (props) => {
   let inputElement = null;
   const inputClasses = ["inputElement"];
   let errorMessage = "";
@@ -51,6 +51,7 @@ const Input = props => {
         <input
           {...props.elementConfig}
           value={props.value}
+          // {...{ value: props.value }}
           className={inputClasses.join(" ")}
           onChange={props.onChange}
         />
@@ -63,7 +64,7 @@ const Input = props => {
           className={inputClasses.join(" ")}
           onChange={props.onChange}
         >
-          {props.elementConfig.options.map(option => {
+          {props.elementConfig.options.map((option) => {
             return (
               <option key={option.value} value={option.value}>
                 {option.displayValue}
@@ -86,7 +87,7 @@ const Input = props => {
       inputElement = (
         <input
           {...props.elementConfig}
-          //   value={props.value}
+          value={props.value}
           className={inputClasses.join(" ")}
           onChange={props.onChange}
         />

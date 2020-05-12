@@ -1,4 +1,5 @@
 import * as burgerActions from "./burgerActions";
 import * as customerActions from "./customerActions";
 import * as orderActions from "./order";
-export { burgerActions, customerActions, orderActions };
+import * as authActions from "./auth";
+export { burgerActions, customerActions, orderActions, authActions };

@@ -23,16 +23,16 @@ export const purchaseBurgerStart = () => {
   return {
     type: actionTypes.PURCHASE_BURGER_START,
     loading: true,
+    error: false,
   };
 };
 
-export const purchaseBurger = (data) => {
+export const purchaseBurger = (data, token) => {
   return (dispatch) => {
     dispatch(purchaseBurgerStart());
     axios
-      .post("/orders.json", data)
+      .post("/orders.json?auth=" + token, data)
       .then((response) => {
-        console.log(response);
         dispatch(purchaseBurgerSuccess(response.data.name, data));
         // this.props.history.push("/");
       })
@@ -65,10 +65,11 @@ export const fetchOrdersFailed = (error) => {
   };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (token, userId = null) => {
   return (dispatch) => {
+    const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
     axios
-      .get("orders.json")
+      .get(`orders.json${queryParams}`)
       .then((response) => {
         let orders = [];
         for (let key in response.data) {
@@ -77,13 +78,12 @@ export const fetchOrders = () => {
         dispatch(fetchOrdersSuccess(orders));
       })
       .catch((error) => {
-        console.log("catched error in [Orders]: ", error);
         dispatch(fetchOrdersFailed(error));
       });
   };
 };
 
-export const fetchOrdersStart = (orders) => {
+export const fetchOrdersStart = () => {
   return {
     type: actionTypes.FETCH_ORDERS_START,
     fetchingOrders: true,

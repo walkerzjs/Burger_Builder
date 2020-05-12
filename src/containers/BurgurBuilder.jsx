@@ -7,7 +7,11 @@ import axios from "../axios-order";
 import Spinner from "../components/UI/Spinner";
 import WithErrorHandler from "../hoc/WithErrorHandler";
 import { connect } from "react-redux";
-import { burgerActions, orderActions } from "../store/actions/index";
+import {
+  burgerActions,
+  orderActions,
+  authActions,
+} from "../store/actions/index";
 import TestHOC from "../hoc/TestHOC";
 // import * as actions from '../store/actions/index'
 
@@ -22,26 +26,19 @@ class BurgurBuilder extends Component {
   state = {
     purchaseable: false,
     purchasing: false,
-    // loading: false,
-    // error: false,
   };
 
   componentDidMount() {
-    // console.log("base price 1: ", this.props.basePrice);
-    // this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
-    // console.log("result: ", result);
-    // console.log("base price 2: ", this.props.basePrice);
-
-    // if (
-    //   this.props.price > this.props.basePrice &&
-    //   // prevProps.price !== this.props.price &&
-    //   this.state.purchaseable === false
-    // ) {
-    //   this.setState({ purchaseable: true });
-    // }
-    if (Object.keys(this.props.ingredients).length === 0) {
+    this.props.onSetBuildingBurger(false);
+    if (
+      Object.keys(this.props.ingredients).length === 0 &&
+      this.props.basePrice
+    ) {
       this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
-    } else {
+    } else if (
+      Object.keys(this.props.ingredients).length > 0 &&
+      this.props.basePrice
+    ) {
       const resetedIngredients = { ...this.props.ingredients };
       for (let key in resetedIngredients) {
         resetedIngredients[key] = 0;
@@ -49,10 +46,10 @@ class BurgurBuilder extends Component {
       this.props.onUpdatingBurger(resetedIngredients, this.props.basePrice);
     }
   }
+
   componentDidUpdate(prevProps) {
     if (prevProps.basePrice !== this.props.basePrice) {
       this.props.onFetchIngredients(INGREDIENT_PRICES, this.props.basePrice);
-      console.log("[ComponentDidUpdate basePrice: ]", this.props.basePrice);
     }
     if (
       this.props.price > this.props.basePrice &&
@@ -111,7 +108,13 @@ class BurgurBuilder extends Component {
   };
 
   purchaseHandler = () => {
-    this.setState({ purchasing: true });
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      this.props.onSetBuildingBurger(true);
+      this.props.onSetAuthRedirectPath("/checkout");
+      this.props.history.push("/auth");
+    }
   };
 
   unPurchaseHandler = () => {
@@ -134,13 +137,6 @@ class BurgurBuilder extends Component {
   };
 
   render() {
-    console.log(
-      "[BurgerBuilder rendering]",
-      this.props.ingredients,
-      this.props.price,
-      this.props.error
-    );
-
     const disabledInfo = {
       ...this.props.ingredients,
     };
@@ -167,14 +163,13 @@ class BurgurBuilder extends Component {
     if (Object.keys(this.props.ingredients).length === 0) {
       orderSummary = <Spinner />;
     }
-    console.log("error: ", this.props.error);
+
     let burger = this.props.error ? (
       <p>Ingredients can't be loaded</p>
     ) : (
       <Spinner />
     );
     if (Object.keys(this.props.ingredients).length > 0 && this.props.price) {
-      console.log("baseprice is: ", this.props.basePrice);
       burger = (
         <React.Fragment>
           <Burger ingredients={this.props.ingredients} />
@@ -185,6 +180,7 @@ class BurgurBuilder extends Component {
             totalPrice={this.props.price.toFixed(2)}
             purchaseable={this.state.purchaseable}
             purchasing={this.purchaseHandler}
+            isAuthenticated={this.props.isAuthenticated}
           />
         </React.Fragment>
       );
@@ -220,6 +216,7 @@ const mapStateToProps = (state) => {
     price: state.BurgerReducer.price,
     basePrice: state.BurgerReducer.basePrice,
     error: state.BurgerReducer.error,
+    isAuthenticated: state.AuthReducer.token !== null,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -230,6 +227,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(burgerActions.fetchIngredents(ingredientPrices, basePrice));
     },
     onInitPurchase: () => dispatch(orderActions.purchaseInit()),
+    onSetAuthRedirectPath: (path) =>
+      dispatch(authActions.setAuthRedirectPath(path)),
+    onSetBuildingBurger: (building) =>
+      dispatch(burgerActions.setBuildingBurger(building)),
   };
 };
 

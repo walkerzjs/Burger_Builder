@@ -8,13 +8,16 @@ import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import reducer from "./store/reducers";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers =
+  process.env.NODE_ENV === "development"
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    : null || compose;
 const logger = (store) => {
   return (next) => {
     return (action) => {
-      console.log("[middleware] dispatching: ", action);
+      // console.log("[middleware] dispatching: ", action);
       const result = next(action);
-      console.log("[middleware] next state: ", store.getState());
+      // console.log("[middleware] next state: ", store.getState());
       return result;
     };
   };

@@ -18,7 +18,7 @@ export const fetchIngredents = (INGREDIENT_PRICES, basePrice) => {
             return INGREDIENT_PRICES[ingredient] * response.data[ingredient];
           })
           .reduce((sum, el) => sum + el, 0) + basePrice;
-      dispatch(updateBurger(response.data, updatedPrice));
+      dispatch(updateBurger(response.data, updatedPrice, false));
     } catch (error) {
       dispatch(fetchIngredentsFailed());
     }
@@ -28,5 +28,12 @@ export const fetchIngredents = (INGREDIENT_PRICES, basePrice) => {
 export const fetchIngredentsFailed = () => {
   return {
     type: actionTypes.FETCH_INGREDIENTS_FAILED,
+  };
+};
+
+export const setBuildingBurger = (building) => {
+  return {
+    type: actionTypes.SET_BUILDING_BURGER,
+    building: building,
   };
 };

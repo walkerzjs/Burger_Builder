@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import styled from "styled-components";
 
 const BackdropC = styled.div`
@@ -11,7 +11,7 @@ const BackdropC = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
-const Backdrop = props => {
+const Backdrop = (props) => {
   //   const textInput = useRef(null);
   //   const toggle = () => {
   //     console.log(textInput);

@@ -6,19 +6,19 @@ const WithErrorHendler = (WrappedComponent, axios) => {
       super(props);
       this.state = { error: null };
       // replace componentWillMount
-      this.reqInterceptor = axios.interceptors.request.use(
-        req => {
+      const reqInterceptor = axios.interceptors.request.use(
+        (req) => {
           //   this.setState({ error: null });
           return req;
         },
-        error => {
+        (error) => {
           console.log("error1: ", error);
           this.setState({ error: error });
         }
       );
-      this.resInterceptor = axios.interceptors.response.use(
-        res => res,
-        error => {
+      const resInterceptor = axios.interceptors.response.use(
+        (res) => res,
+        (error) => {
           console.log(
             "error2: ",
             error.message
@@ -29,10 +29,24 @@ const WithErrorHendler = (WrappedComponent, axios) => {
           this.setState({ error: error });
         }
       );
+
+      this.state.reqInterceptor = reqInterceptor;
+      this.state.resInterceptor = resInterceptor;
     }
+
     componentWillUnmount() {
-      axios.interceptors.request.eject(this.reqInterceptor);
-      axios.interceptors.request.eject(this.resInterceptor);
+      // console.log(
+      //   "ejecting",
+      //   this.state.resInterceptor,
+      //   this.state.reqInterceptor
+      // );
+
+      //notice one is request, other is response
+      axios.interceptors.request.eject(this.state.resInterceptor);
+      axios.interceptors.response.eject(this.state.reqInterceptor);
+
+      // console.log("ejected: ", this.state.resInterceptor);
+      // console.log("Removed auth header", { axios });
     }
     errorConfirmedHandler = () => {
       this.setState({ error: null });

@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import Button from "../../components/UI/Button";
-import axios from "../../axios-order";
 import Spinner from "../../components/UI/Spinner";
 import Input from "../../components/UI/Input";
 import { connect } from "react-redux";
 import { orderActions } from "../../store/actions/index";
+import { updateObject, checkValidity } from "../../shared/utility";
 
 const ContactDataC = styled.div`
   margin: 2rem auto;
@@ -57,6 +57,7 @@ class ContactData extends React.Component {
         value: "",
         validation: {
           required: true,
+          isEmail: true,
         },
         valid: false,
         touched: false,
@@ -126,7 +127,7 @@ class ContactData extends React.Component {
     let isAllValid = true;
     for (let key in form) {
       const formfield = { ...form[key] };
-      const validationResult = this.checkValidity(
+      const validationResult = checkValidity(
         formfield.value,
         formfield.validation ? formfield.validation : false
       );
@@ -141,7 +142,6 @@ class ContactData extends React.Component {
     //if not all fields are valid, update state for error and stop submit;
     if (!isAllValid) {
       this.setState({ orderForm: form });
-      console.log(form);
       return;
     }
     //if not invlid, then start sending data.
@@ -155,61 +155,26 @@ class ContactData extends React.Component {
       ingredients: this.props.ingredients,
       price: this.props.price.toFixed(2),
       formData,
+      userId: this.props.userId,
     };
-    this.props.onSubmit(order);
-    // axios
-    //   .post("/orders.json", order)
-    //   .then((response) => {
-    //     this.setState({ loading: false });
-    //     this.props.history.push("/");
-    //   })
-    //   .catch((error) => {
-    //     this.setState({ loading: false });
-    //   });
-  };
-
-  checkValidity = (value, isRuleRequired) => {
-    //what a pattern!
-    let isValid = true;
-    let errorMessage = "";
-    if (isRuleRequired.required) {
-      isValid = value.trim() !== "" && isValid;
-      if (!isValid) {
-        errorMessage = "Please add something!";
-      }
-    }
-    if (isRuleRequired.minLength) {
-      isValid = value.length >= isRuleRequired.minLength && isValid;
-      if (!isValid) {
-        errorMessage = `The length of this field should be more than ${
-          isRuleRequired.minLength - 1
-        } and less than ${isRuleRequired.maxLength + 1}`;
-      }
-    }
-    if (isRuleRequired.maxLength) {
-      isValid = value.length <= isRuleRequired.maxLength && isValid;
-      if (!isValid) {
-        errorMessage = `The length of this field should be more than ${
-          isRuleRequired.minLength - 1
-        } and less than ${isRuleRequired.maxLength + 1}`;
-      }
-    }
-
-    return { isValid, errorMessage };
+    this.props.onSubmit(order, this.props.token);
   };
 
   inputChange = (e, fieldName) => {
     //!! notice to use deep copy
     const orderForm = { ...this.state.orderForm };
-    const updatedFormField = { ...orderForm[fieldName] };
-    updatedFormField.value = e.target.value;
-    const validationResult = this.checkValidity(
-      updatedFormField.value,
-      updatedFormField.validation ? updatedFormField.validation : false
+
+    const { isValid, errorMessage } = checkValidity(
+      e.target.value,
+      orderForm[fieldName].validation ? orderForm[fieldName].validation : false
     );
-    updatedFormField.valid = validationResult.isValid;
-    updatedFormField.errorMessage = validationResult.errorMessage;
-    updatedFormField.touched = true;
+    const updatedFormField = updateObject(orderForm[fieldName], {
+      value: e.target.value,
+      valid: isValid,
+      errorMessage: errorMessage,
+      touched: true,
+    });
+
     // console.log(updatedFormField);
     orderForm[fieldName] = updatedFormField;
     this.setState({ orderForm: orderForm });
@@ -232,7 +197,6 @@ class ContactData extends React.Component {
         />
       );
     }
-    console.log("elements: ", elements);
     return (
       <ContactDataC>
         <h4>Enter your Contact Data</h4>
@@ -255,12 +219,15 @@ const mapStateToProps = (state) => {
     loading: state.OrderReducer.loading,
     ingredients: state.BurgerReducer.ingredients,
     price: state.BurgerReducer.price,
+    token: state.AuthReducer.token,
+    userId: state.AuthReducer.userId,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSubmit: (data) => dispatch(orderActions.purchaseBurger(data)),
+    onSubmit: (data, token) =>
+      dispatch(orderActions.purchaseBurger(data, token)),
   };
 };
 

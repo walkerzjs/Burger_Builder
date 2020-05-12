@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import styled from "styled-components";
 import CheckoutSummary from "../../components/Order/CheckoutSummary";
 import { Route, Redirect } from "react-router-dom";
 import ContactData from "./ContactData";
@@ -40,10 +39,8 @@ class Checkout extends Component {
     this.props.history.replace("/checkout/contact-data");
   };
   render() {
-    console.log(this.state);
     let summary = <Redirect to="/" />;
     if (Object.keys(this.props.ingredients).length > 0) {
-      console.log("purchased: ", this.props.purchased);
       const purchasedRedirect = this.props.purchased ? (
         <Redirect to="/" />
       ) : null;

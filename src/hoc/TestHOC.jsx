@@ -5,7 +5,6 @@ class TestHOC extends React.Component {
     //receive a component (function or class)
     let Child = this.props.child;
 
-    console.log("Child: ", this.props.child);
     // const Child = (props) => {
     //   return this.props.child;
     // };

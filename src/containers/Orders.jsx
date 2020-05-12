@@ -1,15 +1,27 @@
 import React from "react";
-import styled from "styled-components";
 import Order from "../components/Order/Order";
-import axios from "../axios-order";
 import Spinner from "../components/UI/Spinner";
-import withErrorHandler from "../hoc/WithErrorHandler";
+// import withErrorHandler from "../hoc/WithErrorHandler";
 import { connect } from "react-redux";
 import { orderActions } from "../store/actions/index";
 class Orders extends React.Component {
   componentDidMount() {
-    this.props.onFetchingOrdersStart();
-    this.props.onFetchingOrders();
+    if (this.props.isAuthenticated) {
+      this.props.onFetchingOrdersStart();
+      this.props.onFetchingOrders(this.props.token, this.props.userId);
+    }
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      this.props.isAuthenticated &&
+      prevProps.isAuthenticated !== this.props.isAuthenticated
+    ) {
+      this.props.onFetchingOrdersStart();
+      this.props.onFetchingOrders(this.props.token);
+    }
+    if (!this.props.isAuthenticated) {
+      this.props.history.push("/auth");
+    }
   }
   render() {
     let orders = <Spinner />;
@@ -27,16 +39,22 @@ const mapStateToProps = (state) => {
   return {
     fetchingOrders: state.OrderReducer.fetchingOrders,
     orders: state.OrderReducer.orders,
+    token: state.AuthReducer.token,
+    isAuthenticated: state.AuthReducer.token !== null,
+    userId: state.AuthReducer.userId,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchingOrders: () => dispatch(orderActions.fetchOrders()),
+    onFetchingOrders: (token, userId) =>
+      dispatch(orderActions.fetchOrders(token, userId)),
     onFetchingOrdersStart: () => dispatch(orderActions.fetchOrdersStart()),
   };
 };
 
-export default withErrorHandler(
-  connect(mapStateToProps, mapDispatchToProps)(Orders),
-  axios
-);
+// export default withErrorHandler(
+//   connect(mapStateToProps, mapDispatchToProps)(Orders),
+//   axios
+// );
+
+export default connect(mapStateToProps, mapDispatchToProps)(Orders);

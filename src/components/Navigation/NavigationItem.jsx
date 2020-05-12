@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const NavigationItemC = styled.li`
   margin: 1rem 0;
@@ -47,7 +47,7 @@ const NavigationItemC = styled.li`
   }
 `;
 
-const NavigationItem = props => (
+const NavigationItem = (props) => (
   <NavigationItemC>
     <NavLink to={props.link} exact activeClassName="NavigationItemActive">
       {props.children}

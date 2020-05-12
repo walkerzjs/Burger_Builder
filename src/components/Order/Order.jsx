@@ -16,14 +16,13 @@ const OrderC = styled.div`
   }
 `;
 
-const Order = props => {
-  console.log(props.order);
+const Order = (props) => {
   const ingredients = [];
   //alternative for Object.keys(array)
   for (let name in props.order.data.ingredients) {
     ingredients.push({
       name: name,
-      amount: props.order.data.ingredients[name]
+      amount: props.order.data.ingredients[name],
     });
   }
   return (
@@ -31,7 +30,7 @@ const Order = props => {
       <p>Order Id: {props.order.id}</p>
 
       <span>Ingredients:</span>
-      {ingredients.map(item => {
+      {ingredients.map((item) => {
         return (
           <span key={item.name} className="OrderIngredient">
             {item.name}: ({item.amount})

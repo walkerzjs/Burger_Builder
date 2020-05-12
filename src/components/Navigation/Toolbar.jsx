@@ -35,7 +35,7 @@ const ToolBarC = styled.header`
   } */
 `;
 
-const Toolbar = props => {
+const Toolbar = (props) => {
   return (
     <ToolBarC>
       <DrawerToggle onClick={props.sideDrawerOpen} />
@@ -43,7 +43,7 @@ const Toolbar = props => {
         <Logo />
       </div>
       <nav className="DesktopOnly">
-        <NavigationItems />
+        <NavigationItems isAuthenticated={props.isAuthenticated} />
       </nav>
     </ToolBarC>
   );

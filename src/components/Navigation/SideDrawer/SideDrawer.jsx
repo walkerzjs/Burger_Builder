@@ -34,18 +34,21 @@ const SideDrawerC = styled.div`
   }
 `;
 
-const SideDrawer = props => {
+const SideDrawer = (props) => {
   return (
     <React.Fragment>
       <Backdrop show={props.showDrawer} clicked={props.closed} />
-      <SideDrawerC className={props.showDrawer ? "Open" : "Close"}>
+      <SideDrawerC
+        className={props.showDrawer ? "Open" : "Close"}
+        onClick={props.closed}
+      >
         <DrawerToggle inDrawer={true} onClick={props.closed} />
         <div className="logo">
           <Logo />
         </div>
 
         <nav>
-          <NavigationItems />
+          <NavigationItems isAuthenticated={props.isAuthenticated} />
         </nav>
       </SideDrawerC>
     </React.Fragment>

@@ -1,5 +1,5 @@
 import * as actionTypes from "../actions/actionTypes";
-import { updateObject } from "../utility";
+import { updateObject } from "../../shared/utility.js";
 
 const initialStore = {
   orders: [],
@@ -54,7 +54,10 @@ const orderReducer = (state = initialStore, action) => {
       return purchaseBurgerFailed(state, action);
 
     case actionTypes.FETCH_ORDERS_START:
-      return updateObject(state, { fetchingOrders: action.fetchingOrders });
+      return updateObject(state, {
+        fetchingOrders: action.fetchingOrders,
+        error: false,
+      });
 
     case actionTypes.FETCH_ORDERS_SUCCESS:
       return fetchOrdersSuccess(state, action);

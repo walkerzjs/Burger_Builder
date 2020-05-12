@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import styled from "styled-components";
 import Burger from "../Burger/Burger";
 import Button from "../UI/Button";
@@ -18,7 +18,7 @@ const CheckoutSummaryC = styled.div`
   }
 `;
 
-const CheckoutSummary = props => {
+const CheckoutSummary = (props) => {
   return (
     <CheckoutSummaryC>
       <h1>We hope it tastes well!</h1>

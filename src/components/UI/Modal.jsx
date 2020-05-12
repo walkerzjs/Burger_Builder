@@ -15,8 +15,9 @@ const ModelC = styled.div`
   box-sizing: border-box;
   transition: all 0.3s ease-out;
 
-  transform: ${props => (props.show ? "translateY(0)" : "translateY(-100vh)")};
-  opacity: ${props => (props.show ? "1" : "0")};
+  transform: ${(props) =>
+    props.show ? "translateY(0)" : "translateY(-100vh)"};
+  opacity: ${(props) => (props.show ? "1" : "0")};
   /* @media (min-width: 60rem) {
     width: 50rem;
     left: calc(50%-25rem);
@@ -31,7 +32,6 @@ class Modal extends Component {
     );
   }
   render() {
-    console.log("rendering modal..");
     return (
       <React.Fragment>
         <Backdrop show={this.props.show} clicked={this.props.modalClosed} />

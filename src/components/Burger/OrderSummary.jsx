@@ -15,7 +15,6 @@ class OrderSummary extends Component {
         </li>
       );
     });
-    console.log("ordersum: ", this.props.ingredients);
     return (
       <React.Fragment>
         <h3>Your Order</h3>

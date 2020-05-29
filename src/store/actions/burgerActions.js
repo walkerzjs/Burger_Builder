@@ -1,5 +1,4 @@
 import * as actionTypes from "./actionTypes";
-import axios from "../../axios-order";
 export const updateBurger = (ingredients, price) => {
   return {
     type: actionTypes.UPDATE_BURGER,
@@ -9,25 +8,18 @@ export const updateBurger = (ingredients, price) => {
 };
 
 export const fetchIngredents = (INGREDIENT_PRICES, basePrice) => {
-  return async (dispatch) => {
-    try {
-      const response = await axios.get("ingredients.json");
-      let updatedPrice =
-        Object.keys(response.data)
-          .map((ingredient) => {
-            return INGREDIENT_PRICES[ingredient] * response.data[ingredient];
-          })
-          .reduce((sum, el) => sum + el, 0) + basePrice;
-      dispatch(updateBurger(response.data, updatedPrice, false));
-    } catch (error) {
-      dispatch(fetchIngredentsFailed());
-    }
+  return {
+    type: actionTypes.FETCH_INGREDIENTS,
+    INGREDIENT_PRICES: INGREDIENT_PRICES,
+    basePrice: basePrice,
   };
 };
 
-export const fetchIngredentsFailed = () => {
+export const fetchIngredentsFailed = (error) => {
+  console.log("2", error);
   return {
     type: actionTypes.FETCH_INGREDIENTS_FAILED,
+    error: error,
   };
 };
 

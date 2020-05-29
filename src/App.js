@@ -1,13 +1,13 @@
-import React from "react";
+import React, { Suspense } from "react";
 import styled from "styled-components";
 import Layout from "./containers/Layout";
-import BurgurBuilder from "./containers/BurgurBuilder";
-import Checkout from "./containers/Checkout/Checkout";
+import BurgurBuilder from "./containers/BurgerBuilder/BurgerBuilder";
+// import Checkout from "./containers/Checkout/Checkout";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import Orders from "./containers/Orders";
+// import Orders from "./containers/Orders";
 import { connect } from "react-redux";
 import * as actionTypes from "./store/actions/actionTypes";
-import Auth from "./containers/Auth/Auth";
+// import Auth from "./containers/Auth/Auth";
 import Logout from "./containers/Auth/Logout";
 import axios from "./axios-order";
 import { authActions } from "./store/actions/index";
@@ -16,6 +16,18 @@ const Container = styled.div`
   /* color: blue;
   font-size: 1rem; */
 `;
+
+const Checkout = React.lazy(() => {
+  return import("./containers/Checkout/Checkout");
+});
+
+const Orders = React.lazy(() => {
+  return import("./containers/Orders");
+});
+
+const Auth = React.lazy(() => {
+  return import("./containers/Auth/Auth");
+});
 
 class App extends React.Component {
   getBasePrice = () => {
@@ -38,7 +50,15 @@ class App extends React.Component {
     let routes = (
       <Switch>
         <Route path="/" exact component={BurgurBuilder} />
-        <Route path="/auth" component={Auth} />
+        {/* <Route path="/auth" component={Auth} /> */}
+        <Route
+          path="/auth"
+          render={(props) => (
+            <Suspense fallback={<div>Loading...</div>}>
+              <Auth {...props} />
+            </Suspense>
+          )}
+        />
         <Redirect to="/" />
       </Switch>
     );
@@ -46,10 +66,35 @@ class App extends React.Component {
       routes = (
         <Switch>
           <Route path="/" exact component={BurgurBuilder} />
-          <Route path="/checkout" component={Checkout} />
-          <Route path="/orders" component={Orders} />
+
+          <Route
+            path="/checkout"
+            // component={Checkout}
+
+            render={(props) => (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Checkout {...props} />
+              </Suspense>
+            )}
+          />
+          <Route
+            path="/orders"
+            render={(props) => (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Orders {...props} />
+              </Suspense>
+            )}
+          />
+
+          <Route
+            path="/auth"
+            render={(props) => (
+              <Suspense fallback={<div>Loading...</div>}>
+                <Auth {...props} />
+              </Suspense>
+            )}
+          />
           <Route path="/logout" component={Logout} />
-          <Route path="/auth" component={Auth} />
 
           <Redirect to="/" />
         </Switch>

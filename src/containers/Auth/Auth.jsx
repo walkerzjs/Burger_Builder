@@ -21,6 +21,9 @@ const AuthC = styled.div`
     /* color: green; */
     /* padding: 0; */
   }
+  /* .btn {
+    color: red;
+  } */
   input {
     display: block;
     margin: 1rem auto;
@@ -135,13 +138,15 @@ class Auth extends React.Component {
     if (this.props.isAuthenticated) {
       return <Redirect to={this.props.authRedirectPath} />;
     }
-    const formElementsArray = [];
+    let formElementsArray = [];
     for (let key in this.state.controls) {
       formElementsArray.push({
         id: key,
         config: this.state.controls[key],
       });
     }
+    // for safari compatability
+    formElementsArray.sort((a, b) => a.id.localeCompare(b.id));
     let form = formElementsArray.map((formElement) => {
       return (
         <Input

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import Logo from "../../Logo";
-import NavigationItems from "../NavigationItems";
+import NavigationItems from "../NavigationItems/NavigationItems";
 import Backdrop from "../../UI/Backdrop";
 import DrawerToggle from "./DrawerToggle";
 

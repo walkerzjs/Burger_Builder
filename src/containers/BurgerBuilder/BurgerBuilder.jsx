@@ -1,18 +1,18 @@
 import React, { Component } from "react";
-import Burger from "../components/Burger/Burger";
-import BuildControls from "../components/Burger/BuildControls/BuildControls";
-import Modal from "../components/UI/Modal";
-import OrderSummary from "../components/Burger/OrderSummary";
-import axios from "../axios-order";
-import Spinner from "../components/UI/Spinner";
-import WithErrorHandler from "../hoc/WithErrorHandler";
+import Burger from "../../components/Burger/Burger";
+import BuildControls from "../../components/Burger/BuildControls/BuildControls";
+import Modal from "../../components/UI/Modal";
+import OrderSummary from "../../components/Burger/OrderSummary";
+import axios from "../../axios-order";
+import Spinner from "../../components/UI/Spinner";
+import WithErrorHandler from "../../hoc/WithErrorHandler";
 import { connect } from "react-redux";
 import {
   burgerActions,
   orderActions,
   authActions,
-} from "../store/actions/index";
-import TestHOC from "../hoc/TestHOC";
+} from "../../store/actions/index";
+import TestHOC from "../../hoc/TestHOC";
 // import * as actions from '../store/actions/index'
 
 const INGREDIENT_PRICES = {
@@ -22,7 +22,7 @@ const INGREDIENT_PRICES = {
   bacon: 0.7,
 };
 
-class BurgurBuilder extends Component {
+export class BurgerBuilder extends Component {
   state = {
     purchaseable: false,
     purchasing: false,
@@ -237,4 +237,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(WithErrorHandler(BurgurBuilder, axios));
+)(WithErrorHandler(BurgerBuilder, axios));

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import NavigationItem from "./NavigationItem";
+import NavigationItem from "../NavigationItem";
 import { withRouter } from "react-router-dom";
 const NavigationItemsC = styled.ul`
   margin: 0;
@@ -32,4 +32,5 @@ const NavigationItems = (props) => {
   );
 };
 
+// export default WithErrorHandler(withRouter(NavigationItems), axios);
 export default withRouter(NavigationItems);

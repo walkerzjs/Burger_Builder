@@ -5,6 +5,7 @@ const initialState = {
   price: null,
   basePrice: null,
   error: false,
+  errorMessage: "",
   building: false,
 };
 
@@ -28,7 +29,13 @@ const burgerReducer = (state = initialState, action) => {
       return updateBasePrice(state, action);
 
     case actionTypes.FETCH_INGREDIENTS_FAILED:
-      return updateObject(state, { error: true });
+      console.log("3", action.error);
+      const updatedState = updateObject(state, {
+        error: true,
+        errorMessage: action.error.message,
+      });
+      console.log("updatedState", updatedState);
+      return updatedState;
 
     case actionTypes.SET_BUILDING_BURGER:
       return updateObject(state, action);

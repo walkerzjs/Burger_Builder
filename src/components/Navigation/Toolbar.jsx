@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Logo from "../Logo";
-import NavigationItems from "./NavigationItems";
+import NavigationItems from "./NavigationItems/NavigationItems";
 import DrawerToggle from "../Navigation/SideDrawer/DrawerToggle";
 const ToolBarC = styled.header`
   height: 5.6rem;

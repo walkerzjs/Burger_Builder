@@ -12,12 +12,12 @@ const ButtonC = styled.button`
   margin: 10px;
   font-weight: bold;
 
-  .Button:first-of-type {
+  /* .Button:first-of-type {
     margin-left: 0;
     padding-left: 0;
-  }
+  } */
 
-  color: ${props =>
+  color: ${(props) =>
     props.btnType === "success"
       ? "#5c9210"
       : props.btnType === "danger"
@@ -25,9 +25,9 @@ const ButtonC = styled.button`
       : "currentcolor"};
 `;
 
-const Button = props => {
+const Button = (props) => {
   return (
-    <ButtonC onClick={props.clicked} btnType={props.btnType}>
+    <ButtonC onClick={props.clicked} btnType={props.btnType} className="btn">
       {props.children}
     </ButtonC>
   );

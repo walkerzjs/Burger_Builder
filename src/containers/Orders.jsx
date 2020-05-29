@@ -7,7 +7,7 @@ import { orderActions } from "../store/actions/index";
 class Orders extends React.Component {
   componentDidMount() {
     if (this.props.isAuthenticated) {
-      this.props.onFetchingOrdersStart();
+      // this.props.onFetchingOrdersStart();
       this.props.onFetchingOrders(this.props.token, this.props.userId);
     }
   }
@@ -16,7 +16,7 @@ class Orders extends React.Component {
       this.props.isAuthenticated &&
       prevProps.isAuthenticated !== this.props.isAuthenticated
     ) {
-      this.props.onFetchingOrdersStart();
+      // this.props.onFetchingOrdersStart();
       this.props.onFetchingOrders(this.props.token);
     }
     if (!this.props.isAuthenticated) {

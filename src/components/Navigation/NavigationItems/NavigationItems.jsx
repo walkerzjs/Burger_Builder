@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import NavigationItem from "../NavigationItem";
-import { withRouter } from "react-router-dom";
+import { withRouter, useHistory } from "react-router-dom";
 const NavigationItemsC = styled.ul`
   margin: 0;
   padding: 0;
@@ -16,7 +16,9 @@ const NavigationItemsC = styled.ul`
   }
 `;
 const NavigationItems = (props) => {
-  //   console.log("nav ", props, props.match.url);
+  // console.log("nav history", props.history, props.match.url);
+  // let history = useHistory();
+  // console.log("history: ", history);
   return (
     <NavigationItemsC>
       <NavigationItem link="/">Burger Builder</NavigationItem>
@@ -33,4 +35,5 @@ const NavigationItems = (props) => {
 };
 
 // export default WithErrorHandler(withRouter(NavigationItems), axios);
-export default withRouter(NavigationItems);
+// export default withRouter(NavigationItems);
+export default NavigationItems;

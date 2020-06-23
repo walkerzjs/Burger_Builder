@@ -1,11 +1,11 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import Layout from "./containers/Layout";
 import BurgurBuilder from "./containers/BurgerBuilder/BurgerBuilder";
 // import Checkout from "./containers/Checkout/Checkout";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 // import Orders from "./containers/Orders";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as actionTypes from "./store/actions/actionTypes";
 // import Auth from "./containers/Auth/Auth";
 import Logout from "./containers/Auth/Logout";
@@ -29,103 +29,59 @@ const Auth = React.lazy(() => {
   return import("./containers/Auth/Auth");
 });
 
-class App extends React.Component {
-  getBasePrice = () => {
+const App = (props) => {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(
+    (state) => state.AuthReducer.token !== null
+  );
+  const getBasePrice = useCallback(() => {
+    console.log("get base price");
     let basePrice = 0;
     axios
       .get("basePrice.json")
       .then((response) => {
         basePrice = response.data;
-        this.props.onUpdatingBasePrice(basePrice);
+        // props.onUpdatingBasePrice(basePrice);
+        dispatch({ type: actionTypes.UPDATE_BASE_PRICE, basePrice: basePrice });
       })
       .catch((error) => {
         console.log(error);
       });
-  };
-  componentDidMount() {
-    this.props.onAuthCheckState();
-    this.getBasePrice();
-  }
-  render() {
-    let routes = (
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(authActions.authCheckState());
+    getBasePrice();
+  }, [dispatch, getBasePrice]);
+
+  let routes = (
+    <Switch>
+      <Route path="/" exact component={BurgurBuilder} />
+      <Route path="/auth" render={(props) => <Auth {...props} />} />
+      <Redirect to="/" />
+    </Switch>
+  );
+  if (isAuthenticated) {
+    routes = (
       <Switch>
         <Route path="/" exact component={BurgurBuilder} />
-        {/* <Route path="/auth" component={Auth} /> */}
-        <Route
-          path="/auth"
-          render={(props) => (
-            <Suspense fallback={<div>Loading...</div>}>
-              <Auth {...props} />
-            </Suspense>
-          )}
-        />
+        <Route path="/checkout" render={(props) => <Checkout {...props} />} />
+        <Route path="/orders" render={(props) => <Orders {...props} />} />
+        <Route path="/auth" render={(props) => <Auth {...props} />} />
+        <Route path="/logout" component={Logout} />
         <Redirect to="/" />
       </Switch>
     );
-    if (this.props.isAuthenticated) {
-      routes = (
-        <Switch>
-          <Route path="/" exact component={BurgurBuilder} />
-
-          <Route
-            path="/checkout"
-            // component={Checkout}
-
-            render={(props) => (
-              <Suspense fallback={<div>Loading...</div>}>
-                <Checkout {...props} />
-              </Suspense>
-            )}
-          />
-          <Route
-            path="/orders"
-            render={(props) => (
-              <Suspense fallback={<div>Loading...</div>}>
-                <Orders {...props} />
-              </Suspense>
-            )}
-          />
-
-          <Route
-            path="/auth"
-            render={(props) => (
-              <Suspense fallback={<div>Loading...</div>}>
-                <Auth {...props} />
-              </Suspense>
-            )}
-          />
-          <Route path="/logout" component={Logout} />
-
-          <Redirect to="/" />
-        </Switch>
-      );
-    }
-    return (
-      <BrowserRouter>
-        <Container>
-          <Layout>
-            <Switch>{routes}</Switch>
-          </Layout>
-        </Container>
-      </BrowserRouter>
-    );
   }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onUpdatingBasePrice: (basePrice) =>
-      dispatch({
-        type: actionTypes.UPDATE_BASE_PRICE,
-        basePrice: basePrice,
-      }),
-
-    onAuthCheckState: () => dispatch(authActions.authCheckState()),
-  };
+  return (
+    <BrowserRouter>
+      <Container>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Layout>{routes}</Layout>
+        </Suspense>
+      </Container>
+    </BrowserRouter>
+  );
 };
-export default connect((state) => {
-  return {
-    basePrice: state.BurgerReducer.basePrice,
-    isAuthenticated: state.AuthReducer.token !== null,
-  };
-}, mapDispatchToProps)(App);
+
+export default App;

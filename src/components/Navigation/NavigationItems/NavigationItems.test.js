@@ -13,6 +13,7 @@ describe("<NavigationItems/>", () => {
   beforeEach(() => {
     wrapper = shallow(<NavigationItems.WrappedComponent />);
   });
+
   it("should render two <NavigationItems/> elements if not authenticated", () => {
     expect(wrapper.find(NavigationItem)).toHaveLength(2);
   });

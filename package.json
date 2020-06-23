@@ -23,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "flow": "flow"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -44,10 +45,12 @@
     "@babel/core": "^7.10.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.10.0",
+    "@babel/preset-flow": "^7.10.1",
     "@babel/preset-react": "^7.10.0",
     "@babel/preset-stage-2": "^7.8.3",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
+    "flow-bin": "^0.126.0",
     "install": "^0.13.0",
     "react-test-renderer": "^16.13.1"
   }

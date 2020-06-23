@@ -66,6 +66,7 @@ const controls = [
 ];
 
 const buildControls = (props) => {
+  console.log("render build controls");
   return (
     <BuildControlsC>
       <p>

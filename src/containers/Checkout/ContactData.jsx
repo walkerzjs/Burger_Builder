@@ -6,6 +6,7 @@ import Input from "../../components/UI/Input";
 import { connect } from "react-redux";
 import { orderActions } from "../../store/actions/index";
 import { updateObject, checkValidity } from "../../shared/utility";
+import { useReducer } from "react";
 
 const ContactDataC = styled.div`
   margin: 2rem auto;
@@ -29,8 +30,25 @@ const ContactDataC = styled.div`
   }
 `;
 
-class ContactData extends React.Component {
-  state = {
+const contactReducer = (state, action) => {
+  switch (action.type) {
+    case "UPDATE_ERROR":
+      return {
+        ...state,
+        orderForm: action.orderForm,
+      };
+    case "INPUT_CHANGE":
+      return {
+        state,
+        orderForm: action.orderForm,
+      };
+    default:
+      throw Error("should not be here");
+  }
+};
+
+const ContactData = (props) => {
+  const state = {
     orderForm: {
       name: {
         elementType: "input",
@@ -119,11 +137,18 @@ class ContactData extends React.Component {
     },
   };
 
-  orderSubmit = (e) => {
+  const [contactState, dispatchContactAction] = useReducer(
+    contactReducer,
+    state
+  );
+  // contactState.orderForm.name.value = "test";
+  // console.log("order form name value: ", contactState.orderForm.name.value);
+
+  const orderSubmit = (e) => {
     e.preventDefault();
 
     //check whether the form is valid, check all fields, update form error config
-    const form = { ...this.state.orderForm };
+    const form = { ...contactState.orderForm };
     let isAllValid = true;
     for (let key in form) {
       const formfield = { ...form[key] };
@@ -141,29 +166,27 @@ class ContactData extends React.Component {
     }
     //if not all fields are valid, update state for error and stop submit;
     if (!isAllValid) {
-      this.setState({ orderForm: form });
+      dispatchContactAction({ type: "UPDATE_ERROR", orderForm: form });
       return;
     }
     //if not invlid, then start sending data.
-    // this.setState({ loading: true });
 
     let formData = {};
-    for (let key in this.state.orderForm) {
-      formData[key] = this.state.orderForm[key].value;
+    for (let key in contactState.orderForm) {
+      formData[key] = contactState.orderForm[key].value;
     }
     const order = {
-      ingredients: this.props.ingredients,
-      price: this.props.price.toFixed(2),
+      ingredients: props.ingredients,
+      price: props.price.toFixed(2),
       formData,
-      userId: this.props.userId,
+      userId: props.userId,
     };
-    this.props.onSubmit(order, this.props.token);
+    props.onSubmit(order, props.token);
   };
 
-  inputChange = (e, fieldName) => {
+  const inputChange = (e, fieldName) => {
     //!! notice to use deep copy
-    const orderForm = { ...this.state.orderForm };
-
+    const orderForm = { ...contactState.orderForm };
     const { isValid, errorMessage } = checkValidity(
       e.target.value,
       orderForm[fieldName].validation ? orderForm[fieldName].validation : false
@@ -177,43 +200,39 @@ class ContactData extends React.Component {
 
     // console.log(updatedFormField);
     orderForm[fieldName] = updatedFormField;
-    this.setState({ orderForm: orderForm });
+    dispatchContactAction({ type: "INPUT_CHANGE", orderForm: orderForm });
   };
 
-  render() {
-    // console.log(this.state.orderForm);
-
-    let elements = [];
-    for (let fieldName in this.state.orderForm) {
-      elements.push(
-        <Input
-          label={fieldName.toUpperCase()}
-          {...this.state.orderForm[fieldName]}
-          onChange={(e) => this.inputChange(e, fieldName)}
-          key={fieldName}
-          invalid={!this.state.orderForm[fieldName].valid}
-          shouldValidate={this.state.orderForm[fieldName].validation}
-          touched={this.state.orderForm[fieldName].touched}
-        />
-      );
-    }
-    return (
-      <ContactDataC>
-        <h4>Enter your Contact Data</h4>
-        {this.props.loading ? (
-          <Spinner />
-        ) : (
-          <form action="">
-            {elements}
-            <Button btnType="success" clicked={this.orderSubmit}>
-              Order
-            </Button>
-          </form>
-        )}
-      </ContactDataC>
+  let elements = [];
+  for (let fieldName in contactState.orderForm) {
+    elements.push(
+      <Input
+        label={fieldName.toUpperCase()}
+        {...contactState.orderForm[fieldName]}
+        onChange={(e) => inputChange(e, fieldName)}
+        key={fieldName}
+        invalid={!contactState.orderForm[fieldName].valid}
+        shouldValidate={contactState.orderForm[fieldName].validation}
+        touched={contactState.orderForm[fieldName].touched}
+      />
     );
   }
-}
+  return (
+    <ContactDataC>
+      <h4>Enter your Contact Data</h4>
+      {props.loading ? (
+        <Spinner />
+      ) : (
+        <form action="">
+          {elements}
+          <Button btnType="success" clicked={orderSubmit}>
+            Order
+          </Button>
+        </form>
+      )}
+    </ContactDataC>
+  );
+};
 const mapStateToProps = (state) => {
   return {
     loading: state.OrderReducer.loading,

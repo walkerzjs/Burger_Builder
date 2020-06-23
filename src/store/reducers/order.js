@@ -13,9 +13,9 @@ const purchaseInit = (state, action) => {
   return updateObject(state, { purchased: action.purchased });
 };
 const purchaseBurgerSuccess = (state, action) => {
-  let newOrder = { id: action.id, data: action.data };
+  // let newOrder = { id: action.id, data: action.data };
   return updateObject(state, {
-    orders: state.orders.concat(newOrder),
+    // orders: state.orders.concat(newOrder),
     purchased: action.purchased,
     loading: action.loading,
   });

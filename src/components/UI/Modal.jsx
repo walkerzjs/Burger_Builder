@@ -23,22 +23,20 @@ const ModelC = styled.div`
     left: calc(50%-25rem);
   } */
 `;
+const areEqual = (prevProps, nextProps) => {
+  return (
+    nextProps.show === prevProps.show && nextProps.loading === prevProps.loading
+  );
+};
 
-class Modal extends Component {
-  shouldComponentUpdate(nextProps) {
-    return (
-      nextProps.show !== this.props.show ||
-      nextProps.loading !== this.props.loading
-    );
-  }
-  render() {
-    return (
-      <React.Fragment>
-        <Backdrop show={this.props.show} clicked={this.props.modalClosed} />
-        <ModelC show={this.props.show}>{this.props.children}</ModelC>
-      </React.Fragment>
-    );
-  }
-}
+const Modal = React.memo((props) => {
+  console.log("render modal");
+  return (
+    <React.Fragment>
+      <Backdrop show={props.show} clicked={props.modalClosed} />
+      <ModelC show={props.show}>{props.children}</ModelC>
+    </React.Fragment>
+  );
+}, areEqual);
 
 export default Modal;

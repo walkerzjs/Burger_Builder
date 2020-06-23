@@ -19,6 +19,7 @@ const OrderC = styled.div`
 const Order = (props) => {
   const ingredients = [];
   //alternative for Object.keys(array)
+  console.log("order props: ", props);
   for (let name in props.order.data.ingredients) {
     ingredients.push({
       name: name,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useReducer, useEffect } from "react";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import styled from "styled-components";
@@ -34,8 +34,46 @@ const AuthC = styled.div`
   }
 `;
 
-class Auth extends React.Component {
-  state = {
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case "INPUT_CHANGE":
+      const { isValid, errorMessage } = checkValidity(
+        action.value,
+        state.controls[action.id].validation
+      );
+      const controlsId = updateObject(state.controls[action.id], {
+        value: action.value,
+        valid: isValid,
+        errorMessage: errorMessage,
+        touched: true,
+      });
+      const controls = updateObject(state.controls, {
+        [action.id]: controlsId,
+      });
+      // return { controls: controls };
+
+      return {
+        ...state,
+        controls: controls,
+      };
+    case "SWITCH_AUTH":
+      return {
+        ...state,
+        isSignup: !state.isSignup,
+      };
+    case "UPDATE_ERROR":
+      return {
+        ...state,
+        controls: action.controls,
+      };
+
+    default:
+      throw Error("should not be here");
+  }
+};
+
+const Auth = (props) => {
+  const state = {
     isSignup: false,
     controls: {
       email: {
@@ -73,39 +111,28 @@ class Auth extends React.Component {
     },
   };
 
-  inputChange = (e, id) => {
+  const [authState, dispatchAuthAction] = useReducer(authReducer, state);
+
+  const inputChange = (e, id) => {
     const value = e.target.value;
-    this.setState((prevState) => {
-      const { isValid, errorMessage } = checkValidity(
-        value,
-        prevState.controls[id].validation
-      );
-      const controlsId = updateObject(prevState.controls[id], {
-        value: value,
-        valid: isValid,
-        errorMessage: errorMessage,
-        touched: true,
-      });
-      const controls = updateObject(prevState.controls, { [id]: controlsId });
-      return { controls: controls };
-    });
+    dispatchAuthAction({ type: "INPUT_CHANGE", value: value, id: id });
   };
 
-  componentDidMount() {
-    if (!this.props.buildingBurger && this.props.authRedirectPath !== "/") {
-      this.props.onSetAuthRedirectPath();
+  useEffect(() => {
+    if (!props.buildingBurger && props.authRedirectPath !== "/") {
+      props.onSetAuthRedirectPath();
     }
-  }
-  switchAuth = () => {
-    this.setState((prevState) => {
-      return { isSignup: !prevState.isSignup };
-    });
+  }, []);
+
+  const switchAuth = () => {
+    dispatchAuthAction({ type: "SWITCH_AUTH" });
   };
-  onSubmit = (e) => {
+
+  const onSubmit = (e) => {
     e.preventDefault();
     // const controls = this.state.controls
     //check whether the form is valid, check all fields, update form error config
-    const form = { ...this.state.controls };
+    const form = { ...authState.controls };
     let isAllValid = true;
     for (let key in form) {
       const formfield = { ...form[key] };
@@ -123,67 +150,61 @@ class Auth extends React.Component {
     }
     //if not all fields are valid, update state for error and stop submit;
     if (!isAllValid) {
-      this.setState({ controls: form });
+      dispatchAuthAction({ type: "UPDATE_ERROR", controls: form });
       return;
     }
 
-    this.props.onSubmit(
-      form.email.value,
-      form.password.value,
-      this.state.isSignup
-    );
+    props.onSubmit(form.email.value, form.password.value, authState.isSignup);
   };
 
-  render() {
-    if (this.props.isAuthenticated) {
-      return <Redirect to={this.props.authRedirectPath} />;
-    }
-    let formElementsArray = [];
-    for (let key in this.state.controls) {
-      formElementsArray.push({
-        id: key,
-        config: this.state.controls[key],
-      });
-    }
-    // for safari compatability
-    formElementsArray.sort((a, b) => a.id.localeCompare(b.id));
-    let form = formElementsArray.map((formElement) => {
-      return (
-        <Input
-          label={formElement.id.toUpperCase()}
-          {...formElement.config}
-          onChange={(e) => this.inputChange(e, formElement.id)}
-          key={formElement.id}
-          invalid={!this.state.controls[formElement.id].valid}
-          shouldValidate={this.state.controls[formElement.id].validation}
-          touched={this.state.controls[formElement.id].touched}
-        />
-      );
-    });
-    if (this.props.loading) {
-      form = <Spinner />;
-    }
-    let errorMessage = null;
-    if (this.props.error) {
-      errorMessage = <p>{this.props.error.message}</p>;
-    }
-
-    return (
-      <AuthC>
-        {errorMessage}
-        <form>
-          {form}
-          <Button btnType="success" clicked={this.onSubmit}>
-            Submit
-          </Button>
-        </form>
-        <Button btnType="danger" clicked={this.switchAuth}>
-          Switch to {this.state.isSignup ? "Sign In" : "Sign Up"}
-        </Button>
-      </AuthC>
-    );
+  if (props.isAuthenticated) {
+    return <Redirect to={props.authRedirectPath} />;
   }
-}
+  let formElementsArray = [];
+  for (let key in authState.controls) {
+    formElementsArray.push({
+      id: key,
+      config: authState.controls[key],
+    });
+  }
+  // for safari compatability
+  formElementsArray.sort((a, b) => a.id.localeCompare(b.id));
+  let form = formElementsArray.map((formElement) => {
+    return (
+      <Input
+        label={formElement.id.toUpperCase()}
+        {...formElement.config}
+        onChange={(e) => inputChange(e, formElement.id)}
+        key={formElement.id}
+        invalid={!authState.controls[formElement.id].valid}
+        shouldValidate={authState.controls[formElement.id].validation}
+        touched={authState.controls[formElement.id].touched}
+      />
+    );
+  });
+  if (props.loading) {
+    form = <Spinner />;
+  }
+  let errorMessage = null;
+  if (props.error) {
+    errorMessage = <p>{props.error.message}</p>;
+  }
+
+  return (
+    <AuthC>
+      {errorMessage}
+      <form>
+        {form}
+        <Button btnType="success" clicked={onSubmit}>
+          Submit
+        </Button>
+      </form>
+      <Button btnType="danger" clicked={switchAuth}>
+        Switch to {authState.isSignup ? "Sign In" : "Sign Up"}
+      </Button>
+    </AuthC>
+  );
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 const InputC = styled.div`
@@ -23,6 +23,7 @@ const InputC = styled.div`
 
     &:focus {
       background-color: #ccc;
+      border: 1px solid green;
     }
   }
 
@@ -45,11 +46,22 @@ const Input = (props) => {
     inputClasses.push("invalid");
     errorMessage = <p className="errorMessage">{props.errorMessage}</p>;
   }
+  //use call back to prevent it change address
+  let textInput = React.useCallback(React.createRef(), []);
+  //focus on email input when loaded.
+  useEffect(() => {
+    if (props.label === "EMAIL") {
+      console.log("enter label: ", textInput.current);
+      textInput.current.focus();
+    }
+  }, [textInput, props.label]);
+
   switch (props.elementType) {
     case "input":
       inputElement = (
         <input
           {...props.elementConfig}
+          ref={textInput}
           value={props.value}
           // {...{ value: props.value }}
           className={inputClasses.join(" ")}

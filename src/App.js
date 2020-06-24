@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect, useCallback } from "react";
+import ReactDOMServer from "react-dom/server";
 import styled from "styled-components";
 import Layout from "./containers/Layout";
 import BurgurBuilder from "./containers/BurgerBuilder/BurgerBuilder";
@@ -56,8 +57,9 @@ const App = (props) => {
 
   let routes = (
     <Switch>
-      <Route path="/" exact component={BurgurBuilder} />
+      <Route path="/" exact render={(props) => <BurgurBuilder {...props} />} />
       <Route path="/auth" render={(props) => <Auth {...props} />} />
+
       <Redirect to="/" />
     </Switch>
   );
